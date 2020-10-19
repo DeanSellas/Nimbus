@@ -27,8 +27,16 @@ namespace Nimbus
 
 		RegisterWindow();
 
-		RECT windowRect = { 0, 0, width, height };
-		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+
+		int centerScreenX = GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2;
+		int centerScreenY = GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2;
+
+		RECT windowRect;
+		windowRect.left = centerScreenX;
+		windowRect.right = windowRect.left + width;
+		windowRect.top = centerScreenY;
+		windowRect.bottom = windowRect.top + height;
+		AdjustWindowRect(&windowRect, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
 
 		// https://docs.microsoft.com/en-us/windows/win32/learnwin32/creating-a-window
 		m_handle = CreateWindowEx(
@@ -36,14 +44,15 @@ namespace Nimbus
 			m_window_class_wide.c_str(),
 			m_window_title_wide.c_str(),
 			WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-			0,
-			0,
-			width,
-			height,
+			windowRect.left,
+			windowRect.top,
+			windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top,
 			NULL,
 			NULL,
 			hInstance,
-			pWindowContainer);
+			pWindowContainer
+		);
 
 		if(FAILED(m_handle))
 		{
