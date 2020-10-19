@@ -1,0 +1,3 @@
+[submodule "Nimbus/vendor/spdlog"]
+	path = Nimbus/vendor/spdlog
+	url = https://github.com/gabime/spdlog
