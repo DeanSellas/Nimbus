@@ -4,6 +4,8 @@
 #include "VertexShader.h"
 #include "Shader.h"
 #include "Vertex.h"
+#include <SpriteBatch.h>
+#include <SpriteFont.h>
 
 namespace Nimbus
 {
@@ -34,6 +36,9 @@ namespace Nimbus
 
 		VertexShader m_vertexShader;
 		PixelShader m_pixelShader;
+
+		std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+		std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 	};
 }
 

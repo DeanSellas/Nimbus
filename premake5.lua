@@ -13,6 +13,7 @@ workspace "Nimbus"
 	IncludeDir = {}
 
 	IncludeDir["SpdLog"] = "Nimbus/vendor/spdlog/include"
+	IncludeDir["DirectX11"] = "Nimbus/vendor/DirectX"
 
 	group ""
 
@@ -21,13 +22,15 @@ workspace "Nimbus"
 		kind "WindowedApp"
 		language "C++"
 		cppdialect "C++17"
-		staticruntime "on"
 		
 		targetdir ("%{wks.location}/bin/"..outputdir)
 		objdir ("%{wks.location}/bin-int/" .. outputdir)
 		debugdir("%{wks.location}/bin/"..outputdir)
 
-		prebuildcommands ("md $(TargetDir)Shaders & set errorlevel=0")
+		prebuildcommands {
+			"md $(TargetDir)Resources/Shaders & set errorlevel=0",
+			"xcopy %{prj.location}src\\Nimbus\\Resources\\Font\\* $(TargetDir)Resources\\Fonts\\ /Y"
+		}
 
 		pchheader "pch.h"
 		pchsource "Nimbus/src/pch.cpp"
@@ -47,7 +50,8 @@ workspace "Nimbus"
 		includedirs
 		{
 			"%{prj.name}/src",
-			"%{IncludeDir.SpdLog}"
+			"%{IncludeDir.SpdLog}",
+			"%{IncludeDir.DirectX11}"
 		}
 
 		links

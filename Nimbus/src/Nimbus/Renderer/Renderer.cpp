@@ -5,10 +5,17 @@
 namespace Nimbus
 {
 	bool Renderer::Init(HWND hwnd, int width, int height) {
+		/* STARTS THE RENDER */
+
+		// INIT DX11
 		if(!InitDX11(hwnd, width, height))
 			return false;
+
+		// INIT SHADERS
 		if(!InitShaders())
 			return false;
+
+		// INIT SCENE
 		if(!InitScene())
 			return false;
 
@@ -16,7 +23,7 @@ namespace Nimbus
 	}
 
 	void Renderer::RenderFrame() {
-		float bgcolor[] = { 0.0f, 0.0f, 0.0f };
+		float bgcolor[] = { 0.3f, 0.3f, 0.3f };
 		m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), bgcolor);
 		m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -41,6 +48,11 @@ namespace Nimbus
 		m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer2.GetAddressOf(), &stride, &offset);
 		m_deviceContext->Draw(3, 0);
 
+		//Draw Text
+		m_spriteBatch->Begin();
+		m_spriteFont->DrawString(m_spriteBatch.get(), L"Hello World",DirectX::XMFLOAT2(0,0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+		m_spriteBatch->End();
+		
 		m_swapChain->Present(1, NULL);
 	}
 
@@ -195,6 +207,9 @@ namespace Nimbus
 			return false;
 		}
 
+		m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+		m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Resources\\Fonts\\comic_sans_ms_16.spritefont");
+		
 		return true;
 	}
 
@@ -205,12 +220,12 @@ namespace Nimbus
 			{"Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA},
 		};
 
-		if(!m_vertexShader.Init(m_device, L"VertexShader_v.cso", layout, ARRAYSIZE(layout)))
+		if(!m_vertexShader.Init(m_device, L"Shaders/VertexShader_v.cso", layout, ARRAYSIZE(layout)))
 		{
 			return false;
 		}
 
-		if(!m_pixelShader.Init(m_device, L"PixelShader_p.cso"))
+		if(!m_pixelShader.Init(m_device, L"Shaders/PixelShader_p.cso"))
 		{
 			return false;
 		}
