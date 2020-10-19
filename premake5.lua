@@ -7,7 +7,7 @@ workspace "Nimbus"
 		"Release"
 	}
 
-	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+	outputdir = "%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
 	
 	-- Includes
 	IncludeDir = {}
@@ -22,12 +22,12 @@ workspace "Nimbus"
 		language "C++"
 		cppdialect "C++17"
 		staticruntime "on"
+		
+		targetdir ("%{wks.location}/bin/"..outputdir)
+		objdir ("%{wks.location}/bin-int/" .. outputdir)
+		debugdir("%{wks.location}/bin/"..outputdir)
 
-		
-		
-		targetdir ("bin/"..outputdir)
-		objdir ("bin-int/" .. outputdir)
-		debugdir "$(OutDir)"
+		prebuildcommands ("md $(TargetDir)Shaders & set errorlevel=0")
 
 		pchheader "pch.h"
 		pchsource "Nimbus/src/pch.cpp"
@@ -71,7 +71,7 @@ workspace "Nimbus"
 		filter { "files:**.hlsl" }
 			shadermodel "5.0"
 			flags("ExcludeFromBuild")
-			shaderobjectfileoutput("$(OutDir)%{file.basename}.cso")
+			shaderobjectfileoutput("%{wks.location}/bin/"..outputdir.."/Shaders/%{file.basename}.cso")
 
 		filter { "files:**_p.hlsl" }
 			removeflags "ExcludeFromBuild"
