@@ -23,8 +23,7 @@ namespace Nimbus
 	}
 
 	void Renderer::RenderFrame() {
-		float bgcolor[] = { 0.3f, 0.3f, 0.3f };
-		m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), bgcolor);
+		m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), DirectX::Colors::DimGray);
 		m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		m_deviceContext->IASetInputLayout(m_vertexShader.GetInputLayout());
@@ -233,11 +232,13 @@ namespace Nimbus
 		return true;
 	}
 
-	bool Renderer::InitScene() {
+	bool Renderer::InitScene()
+	{
+		// example triangle with all 3 different types of color inputs
 		Vertex v[] = {
-			Vertex(-0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f),
-			Vertex(0.0f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f),
-			Vertex(0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f)
+			Vertex(-0.5f, -0.5f, 1.0f, DirectX::Colors::Red),
+			Vertex(0.0f, 0.5f, 1.0f, DirectX::XMFLOAT3 { 0.0f, 1.0f, 0.0f}),
+			Vertex(0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f),
 		};
 
 		D3D11_BUFFER_DESC vertexBufferDescription;
@@ -262,10 +263,15 @@ namespace Nimbus
 		}
 
 		// Init Green Tri
-
+		// Example Triangle with the 2 different types of position input
 		Vertex v2[] = {
+			// Method 1 | 3 individual floats for x, y, z
 			Vertex(-0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f),
-			Vertex(0.0f, 0.25f, 0.0f, 0.0f, 1.0f, 0.0f),
+
+			// Method 2 | takes in an XMFLOAT3
+			Vertex({0.0f, 0.25f, 0.0f}, 0.0f, 1.0f, 0.0f),
+
+			// original code
 			Vertex(0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f)
 		};
 
