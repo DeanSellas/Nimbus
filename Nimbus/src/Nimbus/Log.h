@@ -23,4 +23,6 @@ namespace Nimbus
 
 #define NIM_CORE_LOG Log::GetCoreLogger()
 #define NIM_CLIENT_LOG Log::GetClientLogger()
+
+#define ERROR_CHECK(check, msg) if(check) { NIM_CORE_LOG->error(msg); return false; }
 }

@@ -2,7 +2,6 @@
 #include "Renderer.h"
 #include "Fonts.h"
 
-
 namespace Nimbus
 {
 	bool Renderer::Init(HWND hwnd, int width, int height) {
@@ -60,11 +59,7 @@ namespace Nimbus
 		std::vector<AdapterData> adapters = Adapter::GetAdapterData();
 
 		// if an adapter is found
-		if(adapters.size() < 1)
-		{
-			NIM_CORE_LOG->error("No Graphics Adapters Found!");
-			return false;
-		}
+		ERROR_CHECK(adapters.size() < 1, "No Graphics Adapters Found!");
 
 		// Finds primary Adapter. Uses vram size for calculation
 		AdapterData* adapter = nullptr;
@@ -114,26 +109,17 @@ namespace Nimbus
 			NULL, // Supported Feature Levels
 			m_deviceContext.GetAddressOf() // Address of Device Context
 		);
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed To Create Swap Chain");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to Create Swap Chain");
 
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 		hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Get Buffer Failed!");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to get the Buffer");
 
 		hr = m_device->CreateRenderTargetView(backBuffer.Get(), NULL, m_renderTarget.GetAddressOf());
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create Render View!");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to Create Render View");
 
 		// Describe Depth Stencil
 		D3D11_TEXTURE2D_DESC depthStencilDesc;
@@ -150,18 +136,12 @@ namespace Nimbus
 		depthStencilDesc.MiscFlags = 0;
 
 		hr = m_device->CreateTexture2D(&depthStencilDesc, NULL, m_depthStencilBuffer.GetAddressOf());
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create Depth Stencil Buffer");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to create Depth Stencil Buffer");
 
 		hr = m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), NULL, m_depthStencilView.GetAddressOf());
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create Depth Stencil View");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to create Depth Stencil View");
 
 		m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), m_depthStencilView.Get());
 
@@ -174,11 +154,8 @@ namespace Nimbus
 		depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 		hr = m_device->CreateDepthStencilState(&depthStencilStateDesc, m_depthStencilState.GetAddressOf());
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create Depth Stencil State");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to create Depth Stencil State");
 
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -201,17 +178,15 @@ namespace Nimbus
 		rasterDesc.CullMode = D3D11_CULL_BACK;
 
 		hr = m_device->CreateRasterizerState(&rasterDesc, m_rasterState.GetAddressOf());
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create Rasterizer state");
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), "Failed to create Rasterizer state");
 
 		m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
 		m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), Fonts::FranklinGothic);
 		
 		return true;
 	}
+	
 	bool Renderer::InitShaders() {
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{
@@ -236,8 +211,13 @@ namespace Nimbus
 	{
 		// example triangle with all 3 different types of color inputs
 		Vertex v[] = {
+			// Uses DirectX Color Method
 			Vertex(-0.5f, -0.5f, 1.0f, DirectX::Colors::Red),
+
+			// Uses XMFLOAT3 Method
 			Vertex(0.0f, 0.5f, 1.0f, DirectX::XMFLOAT3 { 0.0f, 1.0f, 0.0f}),
+
+			// Uses float r, g, b
 			Vertex(0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f),
 		};
 
@@ -256,11 +236,7 @@ namespace Nimbus
 
 		HRESULT hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexBuffer.GetAddressOf());
 
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create vertex buffer");
-			return false;
-		}
+		ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer")
 
 		// Init Green Tri
 		// Example Triangle with the 2 different types of position input
@@ -288,11 +264,7 @@ namespace Nimbus
 
 		hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexBuffer2.GetAddressOf());
 
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error("Failed to create vertex buffer");
-			return false;
-		}
+		ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer");
 
 		return true;
 	}

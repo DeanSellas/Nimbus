@@ -6,18 +6,12 @@ namespace Nimbus
 	bool PixelShader::Init(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::wstring shaderpath) {
 		HRESULT hr = D3DReadFileToBlob(shaderpath.c_str(), m_buffer.GetAddressOf());
 
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error(L"Failed to load shader at: {}", shaderpath);
-			return false;
-		}
+		ERROR_CHECK(FAILED(hr), L"Failed to load shader at: " + shaderpath);
 
+		
 		hr = device->CreatePixelShader(m_buffer->GetBufferPointer(), m_buffer->GetBufferSize(), NULL, m_shader.GetAddressOf());
-		if(FAILED(hr))
-		{
-			NIM_CORE_LOG->error(L"Failed To create Vertex Shader: {}", shaderpath);
-			return false;
-		}
+
+		ERROR_CHECK(FAILED(hr), L"Failed To Create Pixel Shader: " + shaderpath);
 
 		NIM_CORE_LOG->info("Loaded Pixel Shader!");
 
