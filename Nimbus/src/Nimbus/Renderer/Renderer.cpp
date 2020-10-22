@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Renderer.h"
+#include "Fonts.h"
 
 
 namespace Nimbus
@@ -207,11 +208,10 @@ namespace Nimbus
 		}
 
 		m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
-		m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Resources\\Fonts\\comic_sans_ms_16.spritefont");
+		m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), Fonts::FranklinGothic);
 		
 		return true;
 	}
-
 	bool Renderer::InitShaders() {
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{

@@ -1,9 +1,10 @@
 #pragma once
 #include "Adapter.h"
-#include "PixelShader.h"
-#include "VertexShader.h"
-#include "Shader.h"
 #include "Vertex.h"
+
+#include "Shader/PixelShader.h"
+#include "Shader/VertexShader.h"
+
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 

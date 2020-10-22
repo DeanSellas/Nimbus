@@ -29,7 +29,7 @@ workspace "Nimbus"
 
 		prebuildcommands {
 			"md $(TargetDir)Resources/Shaders & set errorlevel=0",
-			"xcopy %{prj.location}src\\Nimbus\\Resources\\Font\\* $(TargetDir)Resources\\Fonts\\ /Y"
+			"xcopy %{prj.location}src\\Nimbus\\Resources\\Fonts\\* $(TargetDir)Resources\\Fonts\\ /Y"
 		}
 
 		pchheader "pch.h"
