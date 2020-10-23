@@ -13,4 +13,3 @@ namespace Nimbus
 		static std::wstring StringToWide(std::string str) { return std::wstring(str.begin(), str.end()); }
 	};
 }
-

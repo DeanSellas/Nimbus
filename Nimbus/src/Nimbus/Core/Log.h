@@ -1,6 +1,6 @@
 ﻿#pragma once
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
-#include "Core.h"
+#include "Nimbus.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/wincolor_sink.h"
 

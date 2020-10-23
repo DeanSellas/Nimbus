@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Log.h"
+#include "Nimbus.h"
 
 namespace Nimbus
 {

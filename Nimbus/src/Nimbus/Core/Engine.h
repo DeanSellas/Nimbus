@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "Nimbus/Windows/WindowContainer.h"
+#include "Platform/Windows/WindowContainer.h"
 #include "Nimbus/Renderer/Renderer.h"
 
 namespace Nimbus

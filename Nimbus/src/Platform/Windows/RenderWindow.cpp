@@ -2,7 +2,6 @@
 #include "RenderWindow.h"
 #include  "WindowContainer.h"
 
-#include "Nimbus/Log.h"
 namespace Nimbus
 {
 	RenderWindow::~RenderWindow() {
@@ -53,13 +52,8 @@ namespace Nimbus
 			hInstance,
 			pWindowContainer
 		);
-
-		if(FAILED(m_handle))
-		{
-			NIM_CORE_LOG->error("Create Window Failed for window: " + window_title);
-			return false;
-		}
-
+		
+		ERROR_CHECK(FAILED(m_handle), "Create Window Failed for window: " + window_title);
 
 		ShowWindow(m_handle, SW_SHOW);
 		UpdateWindow(m_handle);

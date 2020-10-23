@@ -15,7 +15,8 @@
 
 #include <wrl/client.h>
 
-#include "Nimbus/Log.h"
+#include "Nimbus/Core/Log.h"
+#include "Nimbus.h"
 
 // Link library dependencies
 #pragma comment(lib, "d3d11.lib")
