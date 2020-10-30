@@ -39,14 +39,12 @@ namespace Nimbus
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		// Red Tri
-		m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
-		m_deviceContext->Draw(3, 0);
-
-		// Green Tri
-		m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer2.GetAddressOf(), &stride, &offset);
-		m_deviceContext->Draw(3, 0);
-
+		for(int i = 0; i < m_vertexVector.size(); i++)
+		{
+			m_deviceContext->IASetVertexBuffers(0, 1, m_vertexVector.at(i).GetAddressOf(), &stride, &offset);
+			m_deviceContext->Draw(m_vertexCount.at(i), 0);
+		}
+		
 		//Draw Text
 		m_spriteBatch->Begin();
 		m_spriteFont->DrawString(m_spriteBatch.get(), std::to_wstring((int)(1/deltaTime.GetSeconds())).c_str(),DirectX::XMFLOAT2(0,0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
@@ -209,6 +207,8 @@ namespace Nimbus
 
 	bool Renderer::InitScene()
 	{
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
+		
 		// example triangle with all 3 different types of color inputs
 		Vertex v[] = {
 			// Uses DirectX Color Method
@@ -233,8 +233,12 @@ namespace Nimbus
 		D3D11_SUBRESOURCE_DATA vertexBufferData;
 		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 		vertexBufferData.pSysMem = v;
-
-		HRESULT hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexBuffer.GetAddressOf());
+		
+		
+		m_vertexVector.push_back(vertexBuffer);
+		m_vertexCount.push_back(ARRAYSIZE(v));
+		
+		HRESULT hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexVector.back().GetAddressOf());
 
 		ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer")
 
@@ -262,7 +266,10 @@ namespace Nimbus
 		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 		vertexBufferData.pSysMem = v2;
 
-		hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexBuffer2.GetAddressOf());
+		m_vertexVector.push_back(vertexBuffer);
+		m_vertexCount.push_back(ARRAYSIZE(v2));
+		
+		hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexVector.back().GetAddressOf());
 
 		ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer");
 
