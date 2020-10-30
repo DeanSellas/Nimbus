@@ -4,7 +4,7 @@
 namespace Nimbus
 {
 	bool PixelShader::Init(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::wstring shaderpath) {
-		HRESULT hr = D3DReadFileToBlob(shaderpath.c_str(), m_buffer.GetAddressOf());
+		HRESULT hr = ReadShaderFile(shaderpath);
 
 		ERROR_CHECK(FAILED(hr), L"Failed to load shader at: " + shaderpath);
 
