@@ -14,7 +14,7 @@ namespace Nimbus
 	{
 	public:
 		bool Init(HWND hwnd, int width, int height);
-		void RenderFrame();
+		void RenderFrame(Timestep deltaTime);
 
 	private:
 		bool InitDX11(HWND hwnd, int width, int height);

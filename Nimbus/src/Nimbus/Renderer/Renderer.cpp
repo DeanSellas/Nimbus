@@ -22,7 +22,7 @@ namespace Nimbus
 		return true;
 	}
 
-	void Renderer::RenderFrame() {
+	void Renderer::RenderFrame(Timestep deltaTime) {
 		m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), DirectX::Colors::DimGray);
 		m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -49,7 +49,7 @@ namespace Nimbus
 
 		//Draw Text
 		m_spriteBatch->Begin();
-		m_spriteFont->DrawString(m_spriteBatch.get(), L"Hello World",DirectX::XMFLOAT2(0,0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+		m_spriteFont->DrawString(m_spriteBatch.get(), std::to_wstring((int)(1/deltaTime.GetSeconds())).c_str(),DirectX::XMFLOAT2(0,0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
 		m_spriteBatch->End();
 		
 		m_swapChain->Present(1, NULL);

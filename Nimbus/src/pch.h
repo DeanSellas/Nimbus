@@ -16,6 +16,7 @@
 #include <wrl/client.h>
 
 #include "Nimbus/Core/Log.h"
+#include "Nimbus/Core/Timestep.h"
 #include "Nimbus.h"
 
 // Link library dependencies

@@ -14,6 +14,9 @@ namespace Nimbus
 		bool ProcessMessages();
 		void Update();
 		void Render();
+
+	private:
+		std::chrono::system_clock::time_point m_startTime, m_lastTime;
 	};
 }
 

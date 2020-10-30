@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Engine.h"
-
+#include "Timestep.h"
 namespace Nimbus
 {
 	bool Engine::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
@@ -60,6 +60,9 @@ namespace Nimbus
 	}
 
 	void Engine::Render() {
-		renderer.RenderFrame();
+		auto currentTime = std::chrono::system_clock::now();
+		Timestep deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_lastTime).count();
+		m_lastTime = currentTime;
+		renderer.RenderFrame(deltaTime);
 	}
 }
