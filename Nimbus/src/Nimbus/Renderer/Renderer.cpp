@@ -19,10 +19,26 @@ namespace Nimbus
 		if(!InitScene())
 			return false;
 
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+
+		// Setup Platform/Renderer backends
+		ImGui_ImplWin32_Init(hwnd);
+		ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
+		
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsClassic();
+
+		
+
 		return true;
 	}
-
-	void Renderer::RenderFrame(Timestep deltaTime) {
+	
+	void Renderer::RenderFrame(Timestep deltaTime)
+	{
 		m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), DirectX::Colors::DimGray);
 		m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -42,13 +58,25 @@ namespace Nimbus
 		for(int i = 0; i < m_vertexVector.size(); i++)
 		{
 			m_deviceContext->IASetVertexBuffers(0, 1, m_vertexVector.at(i).GetAddressOf(), &stride, &offset);
-			m_deviceContext->Draw(m_vertexCount.at(i), 0);
+			m_deviceContext->Draw(m_vertexVectorCount.at(i), 0);
 		}
 		
 		//Draw Text
-		m_spriteBatch->Begin();
-		m_spriteFont->DrawString(m_spriteBatch.get(), std::to_wstring((int)(1/deltaTime.GetSeconds())).c_str(),DirectX::XMFLOAT2(0,0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
-		m_spriteBatch->End();
+		//m_spriteBatch->Begin();
+		//m_spriteFont->DrawString(m_spriteBatch.get(), std::to_wstring((int)(1/deltaTime.GetSeconds())).c_str(),DirectX::XMFLOAT2(0,0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
+		//m_spriteBatch->End();
+		
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+
+		ImGui::NewFrame();
+		ImGui::ShowDemoWindow();
+		ImGui::Begin("Test");
+		ImGui::End();
+
+		ImGui::Render();
+
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		
 		m_swapChain->Present(1, NULL);
 	}
@@ -160,8 +188,8 @@ namespace Nimbus
 
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
-		viewport.Width = width;
-		viewport.Height = height;
+		viewport.Width = float(width);
+		viewport.Height = float(height);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 
@@ -208,9 +236,11 @@ namespace Nimbus
 	bool Renderer::InitScene()
 	{
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
+
+		std::vector<std::vector<Vertex>> sceneVerticies;
 		
 		// example triangle with all 3 different types of color inputs
-		Vertex v[] = {
+		sceneVerticies.push_back({
 			// Uses DirectX Color Method
 			Vertex(-0.5f, -0.5f, 1.0f, DirectX::Colors::Red),
 
@@ -219,32 +249,11 @@ namespace Nimbus
 
 			// Uses float r, g, b
 			Vertex(0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f),
-		};
-
-		D3D11_BUFFER_DESC vertexBufferDescription;
-		ZeroMemory(&vertexBufferDescription, sizeof(D3D11_BUFFER_DESC));
-
-		vertexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDescription.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
-		vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDescription.CPUAccessFlags = 0;
-		vertexBufferDescription.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData;
-		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-		vertexBufferData.pSysMem = v;
-		
-		
-		m_vertexVector.push_back(vertexBuffer);
-		m_vertexCount.push_back(ARRAYSIZE(v));
-		
-		HRESULT hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexVector.back().GetAddressOf());
-
-		ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer")
+		});
 
 		// Init Green Tri
 		// Example Triangle with the 2 different types of position input
-		Vertex v2[] = {
+		sceneVerticies.push_back({
 			// Method 1 | 3 individual floats for x, y, z
 			Vertex(-0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f),
 
@@ -253,26 +262,32 @@ namespace Nimbus
 
 			// original code
 			Vertex(0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f)
-		};
+		});
 
-		ZeroMemory(&vertexBufferDescription, sizeof(D3D11_BUFFER_DESC));
+		for(int i = 0; i < sceneVerticies.size(); i++)
+		{
+			D3D11_BUFFER_DESC vertexBufferDescription;
+			ZeroMemory(&vertexBufferDescription, sizeof(D3D11_BUFFER_DESC));
 
-		vertexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDescription.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
-		vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDescription.CPUAccessFlags = 0;
-		vertexBufferDescription.MiscFlags = 0;
+			vertexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+			vertexBufferDescription.ByteWidth = UINT(sizeof(Vertex) * sceneVerticies.at(i).size());
+			vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			vertexBufferDescription.CPUAccessFlags = 0;
+			vertexBufferDescription.MiscFlags = 0;
 
-		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-		vertexBufferData.pSysMem = v2;
+			D3D11_SUBRESOURCE_DATA vertexBufferData;
+			ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+			vertexBufferData.pSysMem = sceneVerticies.at(i).data();
 
-		m_vertexVector.push_back(vertexBuffer);
-		m_vertexCount.push_back(ARRAYSIZE(v2));
+
+			m_vertexVector.push_back(vertexBuffer);
+			m_vertexVectorCount.push_back(sceneVerticies.at(i).size());
+
+			HRESULT hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexVector.back().GetAddressOf());
+
+			ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer")
+		}
 		
-		hr = m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, m_vertexVector.back().GetAddressOf());
-
-		ERROR_CHECK(FAILED(hr), "Failed to create vertex buffer");
-
 		return true;
 	}
 

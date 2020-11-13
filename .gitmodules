@@ -1,3 +1,6 @@
 [submodule "Nimbus/vendor/spdlog"]
 	path = Nimbus/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Nimbus/vendor/imgui"]
+	path = Nimbus/vendor/imgui
+	url = https://github.com/TheCherno/imgui

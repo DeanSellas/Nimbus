@@ -11,9 +11,13 @@ workspace "Nimbus"
 	
 	-- Includes
 	IncludeDir = {}
-
 	IncludeDir["SpdLog"] = "Nimbus/vendor/spdlog/include"
 	IncludeDir["DirectX11"] = "Nimbus/vendor/DirectX"
+	IncludeDir["imgui"] = "Nimbus/vendor/imgui"
+
+	group "Dependancies"
+
+		include "Nimbus/vendor/imgui"
 
 	group ""
 
@@ -39,7 +43,7 @@ workspace "Nimbus"
 		{
 			"%{prj.name}/src/**.h",
 			"%{prj.name}/src/**.cpp",
-			"%{prj.name}/src/**.hlsl",
+			"%{prj.name}/src/**.hlsl"
 		}
 
 		defines
@@ -51,11 +55,13 @@ workspace "Nimbus"
 		{
 			"%{prj.name}/src",
 			"%{IncludeDir.SpdLog}",
-			"%{IncludeDir.DirectX11}"
+			"%{IncludeDir.DirectX11}",
+			"%{IncludeDir.imgui}"
 		}
 
 		links
 		{
+			"imgui",
 			"includes/libs/x64/%{cfg.buildcfg}/*"
 		}
 
